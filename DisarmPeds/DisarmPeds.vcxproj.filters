@@ -18,6 +18,9 @@
     <ClInclude Include="inc\main.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
