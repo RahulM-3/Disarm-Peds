@@ -1,0 +1,2 @@
+#define DISARMPEDS_API __declspec(dllexport)
+#define DISARMPEDS_API __declspec(dllimport)
