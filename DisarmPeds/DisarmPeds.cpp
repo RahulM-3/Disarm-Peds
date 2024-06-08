@@ -2,6 +2,7 @@
 #include "debug.h"
 #include <string>
 #include <vector>
+#include "hashtostr.h"
 
 void update()
 {
@@ -29,7 +30,7 @@ void update()
 		if (PED::IS_PED_HUMAN(peds[i]))
 		{
 			std::string health = std::to_string(ENTITY::GET_ENTITY_HEALTH(peds[i]));
-			std::string model = std::to_string(ENTITY::GET_ENTITY_MODEL(peds[i]));
+			std::string model = dehash(ENTITY::GET_ENTITY_MODEL(peds[i]), "ped");
 
 			Vector3 v = ENTITY::GET_ENTITY_COORDS(peds[i], TRUE, FALSE);
 			Vector3 plv = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), TRUE, FALSE);

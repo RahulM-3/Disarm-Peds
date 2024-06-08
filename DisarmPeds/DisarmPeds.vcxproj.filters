@@ -21,6 +21,9 @@
     <ClInclude Include="debug.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="hashtostr.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
