@@ -1,5 +1,7 @@
 #include "script.h"
 #include "debug.h"
+#include <string>
+#include <vector>
 
 void update()
 {
@@ -25,18 +27,17 @@ void update()
 	for (int i = 0; i < count; i++)
 	{
 		if (PED::IS_PED_HUMAN(peds[i]))
-			entity_draw_info_add(textOnScreen, peds[i], 15, 9999, "A", 75, 110, 75, 75);
-	}
-	// draw
-	for each (auto &iter in textOnScreen)
-	{
-		UI::SET_TEXT_SCALE(0.2, 0.2);
-		UI::SET_TEXT_COLOR_RGBA(255, 255, 255, 255);
-		UI::SET_TEXT_CENTRE(0);
-		UI::SET_TEXT_DROPSHADOW(0, 0, 0, 0, 0);
-		UI::DRAW_TEXT(GAMEPLAY::CREATE_STRING(10, "LITERAL_STRING", const_cast<char *>(iter.text.c_str())), iter.x, iter.y);
-		// box
-		GRAPHICS::DRAW_RECT(iter.x + 0.028f, iter.y + 0.033f, 0.058f, 0.041f, iter.r, iter.g, iter.b, iter.a, 0, 0);
+		{
+			std::string health = std::to_string(ENTITY::GET_ENTITY_HEALTH(peds[i]));
+			std::string model = std::to_string(ENTITY::GET_ENTITY_MODEL(peds[i]));
+
+			Vector3 v = ENTITY::GET_ENTITY_COORDS(peds[i], TRUE, FALSE);
+			Vector3 plv = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), TRUE, FALSE);
+			std::string dist = std::to_string(GAMEPLAY::GET_DISTANCE_BETWEEN_COORDS(plv.x, plv.y, plv.z, v.x, v.y, v.z, TRUE));
+			
+			std::vector<std::string> text = {health, model, dist};
+			entity_draw_info_add(peds[i], text);
+		}
 	}
 }
 
