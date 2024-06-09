@@ -4,10 +4,56 @@
 #include <ctime>
 #include <unordered_map>
 #include <fstream>
+#include <sstream>
 
-std::ofstream logfile("DisarmPeds.log");
+float GetPrivateProfileFloatA()
+{
 
-void entity_draw_info_add(Entity entity, std::vector<std::string> text)
+}
+
+void onscreen_debug(std::vector<std::string> text, float x, float y)
+{
+	int textheight = (text.size() + 1), textwidth = 0;
+	char rawheight[256];
+	char rawwidth[256];
+	char rawx[256];
+	char rawy[256];
+	GetPrivateProfileStringA("test", "height", "", rawheight, sizeof(rawheight), ".\\DisarmPeds.ini");
+	GetPrivateProfileStringA("test", "width", "", rawwidth, sizeof(rawwidth), ".\\DisarmPeds.ini");
+	GetPrivateProfileStringA("test", "x", "", rawx, sizeof(rawx), ".\\DisarmPeds.ini");
+	GetPrivateProfileStringA("test", "y", "", rawy, sizeof(rawy), ".\\DisarmPeds.ini");
+	
+	float heightmul, widthmul, x1, y1;
+	std::stringstream ssh(rawheight);
+	ssh >> heightmul;
+	std::stringstream ssw(rawwidth);
+	ssw >> widthmul;
+	std::stringstream ssx(rawx);
+	ssx >> x1;
+	std::stringstream ssy(rawy);
+	ssy >> y1;
+
+	std::string formatedtext = "On Screen Debug:\n";
+	for each (auto i in text)
+	{
+		formatedtext += i + "\n";
+		widthmul = max(widthmul, i.size());
+	}
+
+	textwidth /= widthmul;
+	textheight /= heightmul;
+
+	formatedtext += "Height: " + std::to_string(textheight) + "\nWidth: " + std::to_string(textwidth);
+	UI::SET_TEXT_SCALE(0.6, 0.6);
+	UI::SET_TEXT_COLOR_RGBA(255, 255, 255, 255);
+	UI::SET_TEXT_CENTRE(0);
+	UI::SET_TEXT_DROPSHADOW(0, 0, 0, 0, 0);
+	UI::DRAW_TEXT(GAMEPLAY::CREATE_STRING(10, "LITERAL_STRING", const_cast<char*>(formatedtext.c_str())), x, y);
+
+	GRAPHICS::DRAW_RECT(x1, y1, textwidth, textheight, 75, 75, 75, 300, 0, 0);
+}
+
+void entity_debug(Entity entity, std::vector<std::string> text)
 {
 	Vector3 v = ENTITY::GET_ENTITY_COORDS(entity, TRUE, FALSE);
 	float x, y;
@@ -71,6 +117,11 @@ public:
 			}
 		}
 		return removed;
+	}
+
+	int size()
+	{
+		return cacheset.size();
 	}
 
 	bool isempty()
