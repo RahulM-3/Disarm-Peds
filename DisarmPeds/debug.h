@@ -13,8 +13,7 @@ float GetPrivateProfileFloatA()
 
 void onscreen_debug(std::vector<std::string> text, float x, float y)
 {
-	int textheight = (text.size() + 1), textwidth = 0;
-	char rawheight[256];
+	/*char rawheight[256];
 	char rawwidth[256];
 	char rawx[256];
 	char rawy[256];
@@ -32,25 +31,30 @@ void onscreen_debug(std::vector<std::string> text, float x, float y)
 	ssx >> x1;
 	std::stringstream ssy(rawy);
 	ssy >> y1;
+	*/
 
 	std::string formatedtext = "On Screen Debug:\n";
+	float width = 0.011, height = 0.04;
+	float x1 = x + 0.005, y1 = y + 0.02;
+	int lines = text.size(), chars = 0;
 	for each (auto i in text)
 	{
 		formatedtext += i + "\n";
-		widthmul = max(widthmul, i.size());
+		chars = max(chars, i.size());
 	}
 
-	textwidth /= widthmul;
-	textheight /= heightmul;
+	width *= chars;
+	x1 += 0.005 * chars;
+	height *= lines+1;
+	y1 += 0.02 * lines;
 
-	formatedtext += "Height: " + std::to_string(textheight) + "\nWidth: " + std::to_string(textwidth);
 	UI::SET_TEXT_SCALE(0.6, 0.6);
 	UI::SET_TEXT_COLOR_RGBA(255, 255, 255, 255);
 	UI::SET_TEXT_CENTRE(0);
 	UI::SET_TEXT_DROPSHADOW(0, 0, 0, 0, 0);
 	UI::DRAW_TEXT(GAMEPLAY::CREATE_STRING(10, "LITERAL_STRING", const_cast<char*>(formatedtext.c_str())), x, y);
 
-	GRAPHICS::DRAW_RECT(x1, y1, textwidth, textheight, 75, 75, 75, 300, 0, 0);
+	GRAPHICS::DRAW_RECT(x1, y1, width, height, 75, 75, 75, 150, 0, 0);
 }
 
 void entity_debug(Entity entity, std::vector<std::string> text)

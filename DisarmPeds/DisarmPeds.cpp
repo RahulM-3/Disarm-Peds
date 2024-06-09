@@ -42,8 +42,6 @@ void update()
 
 	// main
 	
-
-	
 	if (PED::GET_PED_LAST_DAMAGE_BONE(playerPed, &bone))
 	{
 		onscreendebug.push_back("Bone Damage: " + mp_male__boneNames[bone]);
@@ -97,22 +95,6 @@ void update()
 		}
 	}
 	cacheset.update();*/
-	
-	char test[256];
-	GetPrivateProfileStringA("test", "string", "", test, sizeof(test), ".\\DisarmPeds.ini");
-	std::string text = "";
-	for each (auto i in test)
-	{
-		if (i == ',')
-		{
-			onscreendebug.push_back(text);
-			text = "";
-		}
-		else
-		{
-			text += i;
-		}
-	}
 
 	onscreen_debug(onscreendebug, 0.60, 0.60);
 }
