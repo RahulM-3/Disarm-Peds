@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include "hashtostr.h"
-#include <sstream>
 #include "bone.h"
 
 cachememory cacheset(10);
@@ -53,7 +52,7 @@ void update()
 
 
 	// debug
-	/*for (int i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
 		if (PED::IS_PED_HUMAN(peds[i]) && peds[i] != playerPed && PLAYER::IS_PLAYER_FREE_AIMING_AT_ENTITY(player, peds[i]))
 		{
@@ -72,38 +71,36 @@ void update()
 			Vector3 v = ENTITY::GET_ENTITY_COORDS(debpeds[i], TRUE, FALSE);
 			Vector3 plv = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), TRUE, FALSE);
 
-			std::stringstream ss;
-			ss.precision(2);
-			ss << std::fixed << GAMEPLAY::GET_DISTANCE_BETWEEN_COORDS(plv.x, plv.y, plv.z, v.x, v.y, v.z, TRUE);
-			std::string dist = ss.str();
+			std::string dist = "Distance: "+precision(GAMEPLAY::GET_DISTANCE_BETWEEN_COORDS(plv.x, plv.y, plv.z, v.x, v.y, v.z, TRUE));
 
-			std::string gotshot = "None";
-			std::string anyarm = "None";
+			std::string gotshot = "Damaged Bone: None";
+			std::string anyarm = "Hit on any arm: None";
 			if (PED::GET_PED_LAST_DAMAGE_BONE(debpeds[i], &bone))
 			{
-				//logfile << mp_male__boneNames[bone] << "\n";
-				gotshot = mp_male__boneNames[bone];
-				anyarm = hand_bone_name[bone];
+				gotshot = "Damaged Bone: "+mp_male__boneNames[bone];
+				anyarm = "Hit on any arm: "+hand_bone_name[bone];
 				if (anyarm == "")
 				{
-					anyarm = "None";
+					anyarm = "Hit on any arm: None";
 				}
 			}
+			float x, y;
+			GRAPHICS::GET_SCREEN_COORD_FROM_WORLD_COORD(v.x, v.y, v.z, &x, &y);
+			std::string coords = "X: "+std::to_string(x) + " Y: " + std::to_string(y);
 
-			std::vector<std::string> text = {health, model, dist, gotshot, anyarm};
+			std::string timeleft = "Clearing from cache in: " + precision(cacheset.clearcachein(debpeds[i])) + " s";
+
+			std::vector<std::string> text = {health, model, coords, dist, gotshot, anyarm, timeleft};
 			entity_debug(debpeds[i], text);
 		}
 	}
-	cacheset.update();*/
+	cacheset.update();
 
-	onscreen_debug(onscreendebug, 0.60, 0.60);
+	onscreen_debug(onscreendebug, 0.75, 0.75);
 }
 
 void main()
 {	
-	//std::ifstream inifile("DisarmPeds.ini");
-	//logfile << inifile.good() << "\n";
-
 	while (true)
 	{
 		update();

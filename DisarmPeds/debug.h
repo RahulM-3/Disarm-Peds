@@ -6,33 +6,28 @@
 #include <fstream>
 #include <sstream>
 
-float GetPrivateProfileFloatA()
-{
+std::ofstream logfile("DisarmPeds.log");
 
+std::string precision(float value, int pre=2)
+{
+	std::stringstream ss;
+	ss.precision(pre);
+	ss << std::fixed << value;
+	return ss.str();
+}
+
+float GetPrivateProfileFloatA(char* section, char* key, char* defaultval, char* file)
+{
+	char rawvalue[256];
+	GetPrivateProfileStringA(section, key, defaultval, rawvalue, sizeof(rawvalue), file);
+	float value;
+	std::stringstream ss(rawvalue);
+	ss >> value;
+	return value;
 }
 
 void onscreen_debug(std::vector<std::string> text, float x, float y)
 {
-	/*char rawheight[256];
-	char rawwidth[256];
-	char rawx[256];
-	char rawy[256];
-	GetPrivateProfileStringA("test", "height", "", rawheight, sizeof(rawheight), ".\\DisarmPeds.ini");
-	GetPrivateProfileStringA("test", "width", "", rawwidth, sizeof(rawwidth), ".\\DisarmPeds.ini");
-	GetPrivateProfileStringA("test", "x", "", rawx, sizeof(rawx), ".\\DisarmPeds.ini");
-	GetPrivateProfileStringA("test", "y", "", rawy, sizeof(rawy), ".\\DisarmPeds.ini");
-	
-	float heightmul, widthmul, x1, y1;
-	std::stringstream ssh(rawheight);
-	ssh >> heightmul;
-	std::stringstream ssw(rawwidth);
-	ssw >> widthmul;
-	std::stringstream ssx(rawx);
-	ssx >> x1;
-	std::stringstream ssy(rawy);
-	ssy >> y1;
-	*/
-
 	std::string formatedtext = "On Screen Debug:\n";
 	float width = 0.011, height = 0.04;
 	float x1 = x + 0.005, y1 = y + 0.02;
@@ -67,21 +62,28 @@ void entity_debug(Entity entity, std::vector<std::string> text)
 		if (x < 0.01 || y < 0.01 || x > 0.93 || y > 0.93)
 			return;
 
-		float widthmul = 0, heightmul = text.size();
+		float chars = 0, lines = text.size();
 		char formatedtext[256];
-		formatedtext[0] = '^';
-		int i = 1;
+		int i = 0;
+		formatedtext[i++] = '^';
 		for each (std::string t in text)
 		{
 			formatedtext[i++] = '\n';
 			formatedtext[i++] = '|';
 			formatedtext[i++] = ' ';
-			widthmul = max(t.size(), widthmul);
+			chars = max(t.size(), chars);
 			for (int j = 0; j < t.size(); j++)
 			{
 				formatedtext[i++] = t[j];
 			}
 		}
+
+		float width = 0.008, height = 0.03;
+		float x1 = x + 0.0039, y1 = y + 0.02;
+		width *= chars;
+		x1 += 0.0036 * chars;
+		height *= lines;
+		y1 += 0.015 * lines;
 
 		// draw
 		UI::SET_TEXT_SCALE(0.4, 0.4);
@@ -89,6 +91,8 @@ void entity_debug(Entity entity, std::vector<std::string> text)
 		UI::SET_TEXT_CENTRE(0);
 		UI::SET_TEXT_DROPSHADOW(0, 0, 0, 0, 0);
 		UI::DRAW_TEXT(GAMEPLAY::CREATE_STRING(10, "LITERAL_STRING", const_cast<char*>(formatedtext)), x, y);
+		// box
+		GRAPHICS::DRAW_RECT(x1, y1, width, height, 75, 75, 75, 110, 0, 0);
 	}
 }
 
@@ -156,4 +160,10 @@ public:
 		}
 		return peds;
 	}
+
+	float clearcachein(Ped ped)
+	{
+		return  cachetime - (std::time(0) - cacheset[ped]);
+	}
+
 };
