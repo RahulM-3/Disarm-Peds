@@ -166,4 +166,9 @@ public:
 		return  cachetime - (std::time(0) - cacheset[ped]);
 	}
 
+	bool entityoncache(Ped ped)
+	{
+		return cacheset.find(ped) != cacheset.end();
+	}
+
 };
