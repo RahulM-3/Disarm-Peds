@@ -24,9 +24,6 @@
     <ClInclude Include="hashtostr.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="bone.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

@@ -3,18 +3,51 @@
 #include <string>
 #include <vector>
 #include "hashtostr.h"
-#include "bone.h"
 
-cachememory cacheset(10);
-int bone;
-std::ifstream inifile("DisarmPeds.ini");
+cachememory cacheset(10); // debug cache memory
+std::ifstream inifile("DisarmPeds.ini"); // configuration file
+// hand bones
+std::unordered_map<int, std::string> selective_bones = {
+	{46065, "right upper arm"},
+	{54187, "right fore arm"},
+	{37873, "left upper arm"},
+	{53675, "left fore arm"}
+};
+
+// main mod function
+void disarm(Ped ped)
+{
+	int bone; // track damaged bone
+	Hash weapononright; // get current weapon
+	int attach_point = 0;
+	PED::GET_PED_LAST_DAMAGE_BONE(ped, &bone);
+	WEAPON::GET_CURRENT_PED_WEAPON(ped, &weapononright, NULL, 0, NULL);
+
+	// ped debug
+	if (!cacheset.entityoncache(ped))
+	{
+		return;
+	}
+	std::string health = std::to_string(ENTITY::GET_ENTITY_HEALTH(ped));
+	std::string model = ped_names[ENTITY::GET_ENTITY_MODEL(ped)];
+
+	Vector3 v = ENTITY::GET_ENTITY_COORDS(ped, TRUE, FALSE);
+	Vector3 plv = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), TRUE, FALSE);
+	std::string dist = "Distance: " + precision(GAMEPLAY::GET_DISTANCE_BETWEEN_COORDS(plv.x, plv.y, plv.z, v.x, v.y, v.z, TRUE));
+	
+	std::string gotshot = "Damaged Bone: " + skelbone_names[bone];
+	std::string anyarm = "Hit on any arm: " + selective_bones[bone];
+	std::string weapon = "Weapon on right: " + weapon_names[weapononright];
+	std::string weapongroup = "Weapon Group: " +weapon_groups[WEAPON::GET_WEAPONTYPE_GROUP(weapononright)];
+	std::string timeleft = "Clearing from cache in: " + precision(cacheset.clearcachein(ped)) + " s";
+
+	std::vector<std::string> entitydebug = { health, model, dist, weapon, weapongroup, gotshot, anyarm, timeleft };
+	entity_debug(ped, entitydebug);
+}
 
 void update()
 {
 	// player
-	//int right_upper = GetPrivateProfileIntA("Settings", "right_upper", 99, ".\\DisarmPeds.ini");
-	//onscreen_debug(std::to_string(right_upper), 0.50, 0.50);
-	
 	Player player = PLAYER::PLAYER_ID();
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 
@@ -27,7 +60,21 @@ void update()
 	Ped peds[ARR_SIZE];
 	int count = worldGetAllPeds(peds, ARR_SIZE);
 
-	std::vector<std::string> onscreendebug; //on screen debug values
+
+	for (int i = 0; i < count; i++)
+	{
+		// add peds to cache memory for debug
+		if (PED::IS_PED_HUMAN(peds[i]) && peds[i] != playerPed && PLAYER::IS_PLAYER_FREE_AIMING_AT_ENTITY(player, peds[i]))
+		{
+			cacheset.add(peds[i]);
+		}
+
+		disarm(peds[i]);
+	}
+	
+	// debug update
+	std::vector<std::string> onscreendebug; // on screen debug values
+	// ini file debug
 	if (inifile.good())
 	{
 		onscreendebug.push_back("Ini file: found");
@@ -38,64 +85,8 @@ void update()
 	}
 	onscreendebug.push_back("Npc count: " + std::to_string(count));
 
-
-	// main
-	
-	if (PED::GET_PED_LAST_DAMAGE_BONE(playerPed, &bone))
-	{
-		onscreendebug.push_back("Bone Damage: " + mp_male__boneNames[bone]);
-	}
-	else 
-	{
-		onscreendebug.push_back("Bone Damage: None");
-	}
-
-
-	// debug
-	for (int i = 0; i < count; i++)
-	{
-		if (PED::IS_PED_HUMAN(peds[i]) && peds[i] != playerPed && PLAYER::IS_PLAYER_FREE_AIMING_AT_ENTITY(player, peds[i]))
-		{
-			cacheset.add(peds[i]);
-		}
-	}
-	onscreendebug.push_back("Npc on cache: " + std::to_string(cacheset.size()));
-	if (!cacheset.isempty())
-	{
-		std::vector<Ped> debpeds = cacheset.getpeds();
-		for (int i = 0; i < debpeds.size(); i++)
-		{
-			std::string health = std::to_string(ENTITY::GET_ENTITY_HEALTH(debpeds[i]));
-			std::string model = dehash(ENTITY::GET_ENTITY_MODEL(debpeds[i]), "ped");
-
-			Vector3 v = ENTITY::GET_ENTITY_COORDS(debpeds[i], TRUE, FALSE);
-			Vector3 plv = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), TRUE, FALSE);
-
-			std::string dist = "Distance: "+precision(GAMEPLAY::GET_DISTANCE_BETWEEN_COORDS(plv.x, plv.y, plv.z, v.x, v.y, v.z, TRUE));
-
-			std::string gotshot = "Damaged Bone: None";
-			std::string anyarm = "Hit on any arm: None";
-			if (PED::GET_PED_LAST_DAMAGE_BONE(debpeds[i], &bone))
-			{
-				gotshot = "Damaged Bone: "+mp_male__boneNames[bone];
-				anyarm = "Hit on any arm: "+hand_bone_name[bone];
-				if (anyarm == "")
-				{
-					anyarm = "Hit on any arm: None";
-				}
-			}
-			float x, y;
-			GRAPHICS::GET_SCREEN_COORD_FROM_WORLD_COORD(v.x, v.y, v.z, &x, &y);
-			std::string coords = "X: "+std::to_string(x) + " Y: " + std::to_string(y);
-
-			std::string timeleft = "Clearing from cache in: " + precision(cacheset.clearcachein(debpeds[i])) + " s";
-
-			std::vector<std::string> text = {health, model, coords, dist, gotshot, anyarm, timeleft};
-			entity_debug(debpeds[i], text);
-		}
-	}
 	cacheset.update();
-
+	onscreendebug.push_back("Npc on cache: " + std::to_string(cacheset.size()));
 	onscreen_debug(onscreendebug, 0.75, 0.75);
 }
 
