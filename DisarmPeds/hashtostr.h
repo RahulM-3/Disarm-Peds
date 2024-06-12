@@ -1,8 +1,7 @@
 #include <unordered_map>
+#include <string>
 
-using umap = std::unordered_map<uint32_t, char*>;
-
-umap pedsHashtoStr = {
+std::unordered_map<uint32_t, std::string> ped_names = {
     {0x0926B79B, "AMSP_ROBSDGUNSMITH_MALES_01"},
     {0x3D27C285, "AM_VALENTINEDOCTORS_FEMALES_01"},
     {0x53367A8A, "A_F_M_ARMCHOLERACORPSE_01"},
@@ -1437,10 +1436,10 @@ umap pedsHashtoStr = {
     {0x9955028D, "U_M_M_EXECUTIONER_01"},
     {0x0CD32813, "U_M_M_FATDUSTER_01"},
     {0x28F7679D, "U_M_M_FINALE2_AA_UPPERCLASS_01"},
-    {0x0E8B4AB9, "U_M_M_GalaStringQuartet_01"},
-    {0x4418B5DF, "U_M_M_GalaStringQuartet_02"},
-    {0x313F102C, "U_M_M_GalaStringQuartet_03"},
-    {0x677D7CA8, "U_M_M_GalaStringQuartet_04"},
+    {0x0E8B4AB9, "U_M_M_Galastd::stringQuartet_01"},
+    {0x4418B5DF, "U_M_M_Galastd::stringQuartet_02"},
+    {0x313F102C, "U_M_M_Galastd::stringQuartet_03"},
+    {0x677D7CA8, "U_M_M_Galastd::stringQuartet_04"},
     {0x51B75106, "U_M_M_GAMDoorman_01"},
     {0xE5DA06C1, "U_M_M_HHRRANCHER_01"},
     {0x1E87BC0A, "U_M_M_HtlForeman_01"},
@@ -1605,7 +1604,7 @@ umap pedsHashtoStr = {
     {0x6D0EA771, "Western_Saddle_04"}
 };
 
-umap weaponhashtostr = {
+std::unordered_map<uint32_t, std::string> weapon_names = {
     {0xB5C5D8F1, "WEAPON_ALLIGATOR"},
     {0xF9FBAEBE, "WEAPON_ANIMAL"},
     {0xD872AB0A, "WEAPON_BADGER"},
@@ -1775,35 +1774,109 @@ umap weaponhashtostr = {
     {0xB8DA7676, "WEAPON_TURRET_MAXIM"},
     {0x92F80FB7, "WEAPON_TURRET_REVOLVING_CANNON"},
     {0xA2719263, "WEAPON_UNARMED"},
+    {0x5C54EFD4, "WEAPON_UNARMED" },
     {0x0238A339, "WEAPON_WOLF"},
     {0x88394C06, "WEAPON_WOLF_MEDIUM"},
     {0xC80FDF53, "WEAPON_WOLF_SMALL"}
 };
 
-char* dehash(uint32_t hash, std::string type) {
-    if (type == "ped")
-    {
-        auto it = pedsHashtoStr.find(hash);
-        if (it != pedsHashtoStr.end()) {
-            // If the hash is found in the map, return the corresponding string
-            return it->second;
-        }
-        else {
-            // If the hash is not found in the map, return an empty string or a suitable error message
-            return NULL;
-        }
-    }
-    else if (type == "weapon")
-    {
-        auto it = weaponhashtostr.find(hash);
-        if (it != weaponhashtostr.end()) {
-            // If the hash is found in the map, return the corresponding string
-            return it->second;
-        }
-        else {
-            // If the hash is not found in the map, return an empty string or a suitable error message
-            return NULL;
-        }
-    }
-    return NULL;
-}
+std::unordered_map<uint32_t, std::string> weapon_groups = {
+    {3340106041, "group_held"},
+    {0, "group_unarmed"},
+    {308416707, "group_lasso"},
+    {3566412244, "group_melee"},
+    {3082541095, "group_sniper"},
+    {416676503, "group_pistol"},
+    {1622482340, "group_fishingrod"},
+    {970310034, "group_rifle"},
+    {3053283277, "group_bow"},
+    {2685387236, "group_unarmed"},
+    {3193669993, "group_revolver"},
+    {3700405225, "group_repeater"},
+    {860033945, "group_shotgun"},
+    {1548507267, "group_thrown"}
+};
+
+std::unordered_map<int, std::string> skelbone_names = {
+    {21030, "skel_head"},
+    {55120, "skel_l_calf"},
+    {30226, "skel_l_clavicle"},
+    {30226, "SKEL_L_Clavicle"},
+    {41403, "SKEL_L_Finger00"},
+    {41404, "SKEL_L_Finger01"},
+    {41405, "SKEL_L_Finger02"},
+    {41323, "SKEL_L_Finger10"},
+    {41324, "SKEL_L_Finger11"},
+    {41325, "SKEL_L_Finger12"},
+    {41326, "SKEL_L_Finger13"},
+    {41307, "SKEL_L_Finger20"},
+    {41308, "SKEL_L_Finger21"},
+    {41309, "SKEL_L_Finger22"},
+    {41310, "SKEL_L_Finger23"},
+    {41355, "SKEL_L_Finger30"},
+    {41356, "SKEL_L_Finger31"},
+    {41357, "SKEL_L_Finger32"},
+    {41358, "SKEL_L_Finger33"},
+    {41339, "SKEL_L_Finger40"},
+    {41340, "SKEL_L_Finger41"},
+    {41341, "SKEL_L_Finger42"},
+    {41342, "SKEL_L_Finger43"},
+    {45454, "skel_l_foot"},
+    {53675, "skel_l_forearm"},
+    {34606, "skel_l_hand"},
+    {65478, "skel_l_thigh"},
+    {53081, "SKEL_L_Toe0"},
+    {11440, "SKEL_L_Toe10"},
+    {11456, "SKEL_L_Toe20"},
+    {37873, "skel_l_upperarm"},
+    {14283, "skel_neck0"},
+    {14283, "SKEL_Neck0"},
+    {14284, "SKEL_Neck1"},
+    {14284, "skel_neck1"},
+    {14285, "SKEL_Neck2"},
+    {56200, "skel_pelvis"},
+    {10208, "SKEL_Penis00"},
+    {10209, "SKEL_Penis01"},
+    {39035, "SKEL_Penis_Trans"},
+    {43312, "skel_r_calf"},
+    {54802, "skel_r_clavicle"},
+    {54802, "SKEL_R_Clavicle"},
+    {16827, "SKEL_R_Finger00"},
+    {16828, "SKEL_R_Finger01"},
+    {16829, "SKEL_R_Finger02"},
+    {16747, "SKEL_R_Finger10"},
+    {16748, "SKEL_R_Finger11"},
+    {16749, "SKEL_R_Finger12"},
+    {16750, "SKEL_R_Finger13"},
+    {16731, "SKEL_R_Finger20"},
+    {16732, "SKEL_R_Finger21"},
+    {16733, "SKEL_R_Finger22"},
+    {16734, "SKEL_R_Finger23"},
+    {16779, "SKEL_R_Finger30"},
+    {16780, "SKEL_R_Finger31"},
+    {16781, "SKEL_R_Finger32"},
+    {16782, "SKEL_R_Finger33"},
+    {16763, "SKEL_R_Finger40"},
+    {16764, "SKEL_R_Finger41"},
+    {16765, "SKEL_R_Finger42"},
+    {16766, "SKEL_R_Finger43"},
+    {33646, "skel_r_foot"},
+    {54187, "skel_r_forearm"},
+    {22798, "skel_r_hand"},
+    {6884, "skel_r_thigh"},
+    {41273, "SKEL_R_Toe0"},
+    {18013, "SKEL_R_Toe10"},
+    {18029, "SKEL_R_Toe20"},
+    {46065, "skel_r_upperarm"},
+    {14410, "skel_spine0"},
+    {14410, "SKEL_Spine0"},
+    {14411, "skel_spine1"},
+    {14412, "skel_spine2"},
+    {14413, "SKEL_Spine3"},
+    {14413, "skel_spine3"},
+    {14414, "skel_spine4"},
+    {14415, "SKEL_Spine5"},
+    {14416, "SKEL_Spine6"},
+    {11569, "SKEL_Spine_Root"},
+    {11569, "skel_spine_root"},
+};
