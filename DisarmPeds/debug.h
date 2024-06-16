@@ -170,5 +170,4 @@ public:
 	{
 		return cacheset.find(ped) != cacheset.end();
 	}
-
 };

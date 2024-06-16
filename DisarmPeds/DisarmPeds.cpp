@@ -4,6 +4,7 @@
 #include <vector>
 #include "hashtostr.h"
 
+// -- Global variables --
 cachememory cacheset(10); // debug cache memory
 std::ifstream inifile("DisarmPeds.ini"); // configuration file
 // hand bones
@@ -14,12 +15,11 @@ std::unordered_map<int, std::string> selective_bones = {
 	{53675, "left fore arm"}
 };
 
-// main mod function
+// -- main mod function --
 void disarm(Ped ped)
 {
 	int bone; // track damaged bone
 	Hash weapononright; // get current weapon
-	int attach_point = 0;
 	PED::GET_PED_LAST_DAMAGE_BONE(ped, &bone);
 	WEAPON::GET_CURRENT_PED_WEAPON(ped, &weapononright, NULL, 0, NULL);
 
@@ -37,14 +37,16 @@ void disarm(Ped ped)
 	
 	std::string gotshot = "Damaged Bone: " + skelbone_names[bone];
 	std::string anyarm = "Hit on any arm: " + selective_bones[bone];
-	std::string weapon = "Weapon on right: " + weapon_names[weapononright];
+	std::string weapon = "Weapon on right hand: " + weapon_names[weapononright];
 	std::string weapongroup = "Weapon Group: " +weapon_groups[WEAPON::GET_WEAPONTYPE_GROUP(weapononright)];
-	std::string timeleft = "Clearing from cache in: " + precision(cacheset.clearcachein(ped)) + " s";
+	std::string timeleft = "Clearing from cache in: " + precision(cacheset.clearcachein(ped)) + "s";
 
 	std::vector<std::string> entitydebug = { health, model, dist, weapon, weapongroup, gotshot, anyarm, timeleft };
 	entity_debug(ped, entitydebug);
 }
 
+
+// -- update every frame --
 void update()
 {
 	// player
@@ -90,8 +92,15 @@ void update()
 	onscreen_debug(onscreendebug, 0.75, 0.75);
 }
 
+
 void main()
 {	
+	// -- read ini file -- 
+	int right_upper = GetPrivateProfileIntA("DISARM_PROBABILITY", "right_upper", 50, "DisarmPeds.ini");
+	int right_lower = GetPrivateProfileIntA("DISARM_PROBABILITY", "right_lower", 90, "DisarmPeds.ini");
+	int left_upper = GetPrivateProfileIntA("DISARM_PROBABILITY", "left_upper", 10, "DisarmPeds.ini");
+	int left_lower = GetPrivateProfileIntA("DISARM_PROBABILITY", "left_lower", 30, "DisarmPeds.ini");
+
 	while (true)
 	{
 		update();
@@ -99,6 +108,7 @@ void main()
 	}
 }
 
+// -- mod entry point --
 void ScriptMain()
 {	
 	srand(GetTickCount64());
